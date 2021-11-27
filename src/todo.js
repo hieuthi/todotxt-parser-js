@@ -138,6 +138,10 @@ Todo.prototype.getCompletionDate = function (nullValue=null) {
   return this.tokens_[3]["content"] ? Date.parse(this.tokens_[3]["content"]) : nullValue;
 }
 Todo.prototype.setCompletionDate = function (datestring) {
+  if (datestring === null) {
+    this.tokens_[3]["content"] = null;
+    return;
+  }
   if ( !isDate(datestring) ) {return;}
   this.tokens_[3]["content"] = datestring // Set Completiong Date
   this.tokens_[4]["content"] = this.tokens_[4]["content"] || datestring // Ensure Creation Date is not null
@@ -147,6 +151,11 @@ Todo.prototype.getCreationDate = function (nullValue=null) {
   return this.tokens_[4]["content"] ? Date.parse(this.tokens_[4]["content"]) : nullValue;
 }
 Todo.prototype.setCreationDate = function (datestring) {
+  if (datestring === null) {
+    this.tokens_[3]["content"] = null;
+    this.tokens_[4]["content"] = null;
+    return;
+  }
   if ( !isDate(datestring) ) {return;}
   this.tokens_[4]["content"] = datestring // Set Creation Date
 }

@@ -113,17 +113,42 @@ Todo.prototype.toString = function () {
 Todo.prototype.isCompleted = function () {
   return this.tokens_[1]["content"] ? true : false;
 }
+Todo.prototype.setCompleted = function () {
+  this.tokens_[1]["content"] = "x";
+}
+Todo.prototype.unsetCompleted = function () {
+  this.tokens_[1]["content"] = null;
+}
 
 Todo.prototype.getPriority = function (nullValue=null) { /* nullValue = '~' */
   return this.tokens_[2]["content"] ? this.tokens_[2]["content"].charAt(1) : nullValue;
+}
+Todo.prototype.setPriority = function (priority=null) { /* nullValue = '~' */
+  if (priority) {
+    if ( priority.length > 1) { return; }
+    const charCode = priority.charCodeAt(0);
+    if ( charCode < 0x41 /* A */ || charCode > 0x5A /* Z */) { return; }
+    this.tokens_[2]["content"] = "(" + priority + ")";
+  } else {
+    this.tokens_[2]["content"] = null
+  }
 }
 
 Todo.prototype.getCompletionDate = function (nullValue=null) {
   return this.tokens_[3]["content"] ? Date.parse(this.tokens_[3]["content"]) : nullValue;
 }
+Todo.prototype.setCompletionDate = function (datestring) {
+  if ( !isDate(datestring) ) {return;}
+  this.tokens_[3]["content"] = datestring // Set Completiong Date
+  this.tokens_[4]["content"] = this.tokens_[4]["content"] || datestring // Ensure Creation Date is not null
+}
 
 Todo.prototype.getCreationDate = function (nullValue=null) {
   return this.tokens_[4]["content"] ? Date.parse(this.tokens_[4]["content"]) : nullValue;
+}
+Todo.prototype.setCreationDate = function (datestring) {
+  if ( !isDate(datestring) ) {return;}
+  this.tokens_[4]["content"] = datestring // Set Creation Date
 }
 
 Todo.prototype.getProjects = function () {

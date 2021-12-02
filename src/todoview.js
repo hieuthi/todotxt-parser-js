@@ -16,6 +16,7 @@
 'use strict';
 
 var sortOptions_ = { /* [defaultDirection, defaultNullValue] */
+  'default': {},
   'status'        : {'nullValue': 'o', 'order': 'asc'},
   'priority'      : {'nullValue': '~', 'order': 'desc'},
   'creationDate'  : {'nullValue': '1970-01-01', 'order': 'desc'},
@@ -45,9 +46,9 @@ function compareFactory(option){
   }
 }
 
-function filterFactory(option){
+function filterFactory(option, caseInsensitive){
   const field     = option[0];
-  const keywords  = option[1];
+  var keywords    = option[1];
   const nullValue = option[2];
   switch (field){
     case 'status':
@@ -62,13 +63,23 @@ function filterFactory(option){
         return function(a) {
           const projects = a.todo.getProjects();
           if ( projects.length < 1 ) { projects.push(nullValue); } 
-          return projects.some(e => keywords.includes(e));
+          if ( caseInsensitive ) {
+            keywords = keywords.map(e => e.toLowerCase())
+            return projects.map(e => e.toLowerCase()).some(e => keywords.includes(e));
+          } else {
+            return projects.some(e => keywords.includes(e));
+          }
         }
     case 'context':
         return function(a) {
           const contexts = a.todo.getContexts();
           if ( contexts.length < 1 ) { contexts.push(nullValue); }
-          return contexts.some(e => keywords.includes(e));
+          if ( caseInsensitive ){
+            keywords = keywords.map(e => e.toLowerCase())
+            return contexts.map(e => e.toLowerCase()).some(e => keywords.includes(e));
+          } else {
+            return contexts.some(e => keywords.includes(e));
+          }
         }
    }
 }
@@ -81,6 +92,9 @@ function TodoView(list, todoTxt) {
 TodoView.prototype.toString = function () {
   return this.list_.map(e => e.todo ? e.lineIdx + ': ' + e.todo.toString() : e.lineIdx + ': ' + e.raw).join('\n');
 }
+TodoView.prototype.getList = function () {
+  return this.list_;
+}
 
 TodoView.prototype.sort = function (queries) {
   var options = [ ];
@@ -88,7 +102,7 @@ TodoView.prototype.sort = function (queries) {
   for (var i=0; i<queries.length; i++){
     const query = queries[i];
 
-    if (query.length<1 && query[0] in sortOptions_ === false) {continue;}
+    if (query.length<1 || query[0] in sortOptions_ === false) {continue;}
     const field = query.shift();
 
     if (field=='default'){
@@ -116,7 +130,7 @@ TodoView.prototype.sort = function (queries) {
   return new TodoView(list, this.todoTxt_);
 }
 
-TodoView.prototype.filter = function (queries) {
+TodoView.prototype.filter = function (queries, caseInsensitive=false) {
   var options = [ ];
 
   for (var i=0; i<queries.length; i++){
@@ -131,7 +145,7 @@ TodoView.prototype.filter = function (queries) {
 
   var list = this.list_;
   for (var i=0; i<options.length; i++){
-    list = list.filter(filterFactory(options[i]));
+    list = list.filter(filterFactory(options[i], caseInsensitive));
   }
 
   return new TodoView(list, this.todoTxt_);

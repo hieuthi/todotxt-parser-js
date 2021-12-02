@@ -28,6 +28,16 @@ function TodoTxt(content) {
   }
 }
 
+TodoTxt.parse = function (content) {
+  return new TodoTxt(content);
+}
+TodoTxt.parseLine = function (line) {
+  return line.trim().length > 0 ? new Todo(line) : null;
+}
+TodoTxt.isIsoDate = function(datestring) {
+  return Todo.isIsoDate(datestring);
+}
+
 TodoTxt.prototype.toString = function () {
   return this.list_.map(e => e.todo ? e.todo.toString() : e.raw).join('\n');
 }

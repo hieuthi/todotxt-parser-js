@@ -25,13 +25,6 @@ function isSpace(code) {
   return false;
 }
 
-function isDate(datestring) {
-  if (datestring.length != 10 ) { return false; }
-  if (isNaN(Date.parse(datestring))) { return false; }
-
-  return true;
-}
-
 function Todo(line) {
   this.tokens_  = [];
 
@@ -62,8 +55,8 @@ function Todo(line) {
   }
 
   // Start Date and End Date
-  if ( items.length > 0 && isDate(items[0]) ){
-    if ( items.length > 1 && isDate(items[1]) ){
+  if ( items.length > 0 && Todo.isIsoDate(items[0]) ){
+    if ( items.length > 1 && Todo.isIsoDate(items[1]) ){
       this.tokens_.push({type: "completionDate", content: items.shift()});
     } else {
       this.tokens_.push({type: "completionDate", content: null});
@@ -104,6 +97,15 @@ function Todo(line) {
 
 }
 
+Todo.isIsoDate = function (datestring) {
+  if (datestring.length != 10 ) { return false; }
+  if (datestring.charCodeAt(4) != 0x2D /* - */ && datestring.charCodeAt(7) != 0x2D ) { return false; }
+  if (isNaN(Date.parse(datestring))) { return false; }
+
+  return true;
+}
+
+
 Todo.prototype.toString = function () {
   return this.tokens_[0]["content"] + 
             this.tokens_.slice(1,-1).filter(e => e.content).map(e => e.content).join(' ') + 
@@ -138,7 +140,7 @@ Todo.prototype.setPriority = function (priority=null) { /* nullValue = '~' */
 }
 
 Todo.prototype.getCompletionDate = function (nullValue=null) {
-  nullValue = nullValue && isDate(nullValue)? nullValue : null;
+  nullValue = nullValue && Todo.isIsoDate(nullValue)? nullValue : null;
   return this.tokens_[3]["content"] ? this.tokens_[3]["content"] : nullValue;
 }
 Todo.prototype.setCompletionDate = function (datestring) {
@@ -146,13 +148,13 @@ Todo.prototype.setCompletionDate = function (datestring) {
     this.tokens_[3]["content"] = null;
     return;
   }
-  if ( !isDate(datestring) ) {return;}
+  if ( !Todo.isIsoDate(datestring) ) {return;}
   this.tokens_[3]["content"] = datestring // Set Completiong Date
   this.tokens_[4]["content"] = this.tokens_[4]["content"] || datestring // Ensure Creation Date is not null
 }
 
 Todo.prototype.getCreationDate = function (nullValue=null) {
-  nullValue = nullValue && isDate(nullValue)? nullValue : null;
+  nullValue = nullValue && Todo.isIsoDate(nullValue)? nullValue : null;
   return this.tokens_[4]["content"] ? this.tokens_[4]["content"] : nullValue;
 }
 Todo.prototype.setCreationDate = function (datestring) {
@@ -161,7 +163,7 @@ Todo.prototype.setCreationDate = function (datestring) {
     this.tokens_[4]["content"] = null;
     return;
   }
-  if ( !isDate(datestring) ) {return;}
+  if ( !Todo.isIsoDate(datestring) ) {return;}
   this.tokens_[4]["content"] = datestring // Set Creation Date
 }
 

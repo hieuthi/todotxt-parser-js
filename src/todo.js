@@ -110,6 +110,9 @@ Todo.prototype.toString = function () {
             this.tokens_[this.tokens_.length-1]["content"] ;
 }
 
+Todo.prototype.getStatus = function (nullValue=null) {
+  return this.tokens_[1]["content"] ? this.tokens_[1]["content"] : nullValue;
+}
 Todo.prototype.isCompleted = function () {
   return this.tokens_[1]["content"] ? true : false;
 }
@@ -135,7 +138,8 @@ Todo.prototype.setPriority = function (priority=null) { /* nullValue = '~' */
 }
 
 Todo.prototype.getCompletionDate = function (nullValue=null) {
-  return this.tokens_[3]["content"] ? Date.parse(this.tokens_[3]["content"]) : nullValue;
+  nullValue = nullValue && isDate(nullValue)? nullValue : null;
+  return this.tokens_[3]["content"] ? this.tokens_[3]["content"] : nullValue;
 }
 Todo.prototype.setCompletionDate = function (datestring) {
   if (datestring === null) {
@@ -148,7 +152,8 @@ Todo.prototype.setCompletionDate = function (datestring) {
 }
 
 Todo.prototype.getCreationDate = function (nullValue=null) {
-  return this.tokens_[4]["content"] ? Date.parse(this.tokens_[4]["content"]) : nullValue;
+  nullValue = nullValue && isDate(nullValue)? nullValue : null;
+  return this.tokens_[4]["content"] ? this.tokens_[4]["content"] : nullValue;
 }
 Todo.prototype.setCreationDate = function (datestring) {
   if (datestring === null) {

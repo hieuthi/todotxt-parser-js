@@ -13,6 +13,7 @@
 'use strict';
 
 var Todo = require('./todo');
+var TodoView = require('./todoview');
 
 function TodoTxt(content) {
   this.raw_ = content;
@@ -37,6 +38,10 @@ TodoTxt.prototype.getList = function () {
 
 TodoTxt.prototype.getTodos = function () {
   return this.list_.filter(e => e.todo).map(e => e.todo);
+}
+
+TodoTxt.prototype.getTodoView = function () {
+  return new TodoView(this.list_.filter(e => e.todo), this);
 }
 
 module.exports = TodoTxt;

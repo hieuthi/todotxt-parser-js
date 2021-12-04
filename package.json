@@ -2,7 +2,7 @@
   "name": "todotxt-parser-js",
   "version": "0.1.0",
   "description": "Another Todo.txt parser written in JavaScript",
-  "private": true,
+  "main": "todotxt.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",

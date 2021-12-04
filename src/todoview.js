@@ -63,6 +63,7 @@ function filterFactory(option, caseInsensitive){
         return function(a) {
           const projects = a.todo.getProjects();
           if ( projects.length < 1 ) { projects.push(nullValue); } 
+          keywords = keywords.map(e => e.charCodeAt(0) == 0x2B /* + */ ? e : '+' + e);
           if ( caseInsensitive ) {
             keywords = keywords.map(e => e.toLowerCase())
             return projects.map(e => e.toLowerCase()).some(e => keywords.includes(e));
@@ -74,6 +75,7 @@ function filterFactory(option, caseInsensitive){
         return function(a) {
           const contexts = a.todo.getContexts();
           if ( contexts.length < 1 ) { contexts.push(nullValue); }
+          keywords = keywords.map(e => e.charCodeAt(0) == 0x40 /* @ */ ? e : '@' + e);
           if ( caseInsensitive ){
             keywords = keywords.map(e => e.toLowerCase())
             return contexts.map(e => e.toLowerCase()).some(e => keywords.includes(e));
@@ -103,7 +105,7 @@ TodoView.prototype.sort = function (queries) {
     const query = queries[i];
 
     if (query.length<1 || query[0] in sortOptions_ === false) {continue;}
-    const field = query.shift();
+    const field = query[0];
 
     if (field=='default'){
       options = options.filter(e => e[0] !== 'priority' && e[0] !== 'status');
@@ -115,8 +117,8 @@ TodoView.prototype.sort = function (queries) {
     var order = sortOptions_[field]["order"];
     var nullValue = sortOptions_[field]["nullValue"];
 
-    if (query.length>0 && ['desc','asc'].includes(query[0])) { order = query.shift(); }
-    if (query.length>0) { nullValue = query.shift(); }
+    if (query.length>1 && ['desc','asc'].includes(query[1])) { order = query[1]; }
+    if (query.length>2) { nullValue = query[2]; }
 
     options = options.filter(e => e[0] !== field);
     options.push([field,order,nullValue]);
@@ -149,6 +151,17 @@ TodoView.prototype.filter = function (queries, caseInsensitive=false) {
   }
 
   return new TodoView(list, this.todoTxt_);
+}
+
+TodoView.prototype.count = function(query='all') {
+  switch (query.toLowerCase()) {
+    case 'completed':
+      return this.list_.filter(e => e.todo.isCompleted() ).length
+    case 'notcompleted':
+      return this.list_.filter(e => e.todo.isCompleted() === false ).length
+    default:
+      return this.list_.length;
+  }
 }
 
 

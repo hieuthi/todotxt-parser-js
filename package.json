@@ -1,0 +1,31 @@
+{
+  "name": "todotxt-parser-js",
+  "version": "0.1.0",
+  "description": "Another Todo.txt parser written in JavaScript",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "prepublishOnly": "npm run build && cp ./dist/* ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hieuthi/todotxt-parser-js.git"
+  },
+  "keywords": [
+    "todotxt",
+    "parser",
+    "javascript"
+  ],
+  "author": "Hieu-Thi Luong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hieuthi/todotxt-parser-js/issues"
+  },
+  "homepage": "https://github.com/hieuthi/todotxt-parser-js#readme",
+  "devDependencies": {
+    "unminified-webpack-plugin": "^3.0.0",
+    "webpack": "^5.64.3",
+    "webpack-cli": "^4.9.1"
+  }
+}

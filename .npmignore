@@ -1,0 +1,8 @@
+*.md
+index.js
+!README.md
+/src
+/dist
+/test
+tsconfig.json
+webpack.config.js
